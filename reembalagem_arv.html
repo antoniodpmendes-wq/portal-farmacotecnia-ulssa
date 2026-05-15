@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reembalagem ARV — SF ULSSA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --navy:#1B3A5C;--navy-dark:#0F2540;--navy-mid:#2A5282;
+    --purple:#5B21B6;--purple-dark:#3B0E8C;--purple-50:#F5F3FF;--purple-100:#DDD6FE;
+    --bg:#F5F3FC;--surface:#fff;--border:#DDD5F0;
+    --text:#1A1528;--muted:#6B5F8A;
+    --ok-bg:#D1FAE5;--ok-text:#065F46;
+    --no-bg:#FEE2E2;--no-text:#991B1B;
+    --disc-bg:#FEF9C3;--disc-text:#854D0E;
+  }
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
+
+  nav{background:var(--navy-dark);padding:.6rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+  .nav-home{color:#C3D9F0;font-size:13px;text-decoration:none;opacity:.8}
+  .nav-home:hover{opacity:1}
+  .nav-sep{color:#4A6A8A;font-size:13px}
+  .nav-current{color:white;font-size:13px;font-weight:500}
+
+  header{background:var(--purple-dark);color:white;padding:1.75rem 1.5rem 1.5rem}
+  .header-inner{max-width:960px;margin:0 auto}
+  .header-tag{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--purple-100);margin-bottom:.4rem}
+  header h1{font-family:'Outfit',sans-serif;font-size:clamp(1.3rem,3.5vw,1.8rem);font-weight:700}
+  header p{margin-top:.5rem;font-size:13px;color:var(--purple-100);line-height:1.6;max-width:580px}
+  .header-note{margin-top:.9rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:.55rem .9rem;font-size:12px;color:var(--purple-100);max-width:600px}
+
+  .toolbar{position:sticky;top:0;z-index:50;background:white;border-bottom:1px solid var(--border);padding:.7rem 1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .toolbar-inner{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:.55rem}
+  .search-wrap{position:relative}
+  .search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;font-size:15px}
+  input[type=text]{width:100%;padding:.5rem .75rem .5rem 2.2rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;transition:border-color .15s}
+  input:focus{border-color:var(--purple);background:white}
+  input::placeholder{color:var(--muted)}
+  .filters{display:flex;gap:.35rem;flex-wrap:wrap}
+  .fbtn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:.28rem .7rem;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap}
+  .fbtn:hover{border-color:var(--purple);color:var(--purple-dark)}
+  .fbtn.active{background:var(--purple-dark);color:white;border-color:var(--purple-dark)}
+
+  main{max-width:960px;margin:0 auto;padding:1rem 1.5rem 3rem}
+  .count{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:.75rem}
+
+  .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:600px}
+  thead{background:var(--purple-50)}
+  th{padding:.7rem 1rem;text-align:left;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--purple-dark);border-bottom:1px solid var(--border)}
+  td{padding:.65rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#FAF8FF}
+
+  .dci{font-weight:500;line-height:1.4}
+  .codigo{font-family:monospace;font-size:12px;color:var(--muted)}
+  .marca{font-size:13px;color:var(--text)}
+  .prazo-badge{display:inline-block;font-size:11.5px;font-weight:500;padding:2px 8px;border-radius:20px;background:#EDE9FE;color:var(--purple-dark);white-space:nowrap}
+  .badge-ok{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--ok-bg);color:var(--ok-text)}
+  .badge-no{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--no-bg);color:var(--no-text)}
+  .badge-disc{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--disc-bg);color:var(--disc-text)}
+
+  .empty{text-align:center;padding:3rem;color:var(--muted);font-size:14px}
+  #no-result{display:none}
+  footer{text-align:center;padding:1.5rem;font-size:11.5px;color:var(--muted);border-top:1px solid var(--border);background:white}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-home" href="index.html">Portal SF</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-current">Reembalagem ARV</span>
+</nav>
+
+<header>
+  <div class="header-inner">
+    <div class="header-tag">SF ULSSA · Antirretrovirais</div>
+    <h1>Lista Base de Reembalagem ARV</h1>
+    <p>Medicamentos antirretrovirais fornecidos em frasco, com prazo após abertura e indicação de reembalagem.</p>
+    <div class="header-note">Os medicamentos indicados como <strong>Não Reembalar</strong>, bem como os que não constam nesta lista, são fornecidos em frasco original.</div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="toolbar-inner">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Pesquisar DCI ou marca…" autocomplete="off">
+    </div>
+    <div class="filters">
+      <button class="fbtn active" data-f="all">Todos</button>
+      <button class="fbtn" data-f="ok">Reembalar</button>
+      <button class="fbtn" data-f="no">Não Reembalar</button>
+      <button class="fbtn" data-f="prazo">Com prazo definido</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="count" id="count"></div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Designação</th>
+          <th>Marca</th>
+          <th>Prazo após abertura</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div id="no-result" class="empty">Nenhum registo encontrado.</div>
+  </div>
+</main>
+
+<footer>SF ULSSA · Lista base reembalagem ARV · Para uso interno</footer>
+
+<script>
+const data=[
+  {cod:"110004251",dci:"Bictegravir + Emtricitabina + Tenofovir alafenamida cp. 50+200+25 mg",marca:"Biktarvy",prazo:"",nao:false,disc:false},
+  {cod:"110003900",dci:"Darunavir + Cobicistate cp. 800+150 mg",marca:"Rezolsta",prazo:"6 semanas",nao:true,disc:false},
+  {cod:"110002950",dci:"Darunavir cp. 600 mg",marca:"Krka",prazo:"3 meses",nao:false,disc:false},
+  {cod:"110002950",dci:"Darunavir cp. 600 mg",marca:"Prezista",prazo:"",nao:false,disc:false},
+  {cod:"110003623",dci:"Darunavir cp. 800 mg",marca:"Prezista",prazo:"",nao:false,disc:false},
+  {cod:"110003623",dci:"Darunavir cp. 800 mg",marca:"Krka",prazo:"3 meses",nao:false,disc:false},
+  {cod:"110004114",dci:"Darunavir + Cobicistate + Emtricitabina + Tenofovir alafenamida cp. 800+150+200+10 mg",marca:"Symtuza",prazo:"6 semanas",nao:true,disc:false},
+  {cod:"110004334",dci:"Dolutegravir + Rilpivirina cp. 50+25 mg",marca:"Juluca",prazo:"",nao:true,disc:false},
+  {cod:"110003698",dci:"Dolutegravir cp. 50 mg",marca:"Tivicay",prazo:"",nao:false,disc:false},
+  {cod:"110003848",dci:"Dolutegravir + Abacavir + Lamivudina cp. 50+600+300 mg",marca:"Triumeq",prazo:"",nao:true,disc:false},
+  {cod:"110002773",dci:"Efavirenz + Emtricitabina + Tenofovir cp. 600+200+245 mg",marca:"Mylan",prazo:"",nao:false,disc:false},
+  {cod:"110002773",dci:"Efavirenz + Emtricitabina + Tenofovir cp. 600+200+245 mg",marca:"Atripla",prazo:"",nao:false,disc:true},
+  {cod:"110002265",dci:"Emtricitabina + Tenofovir cp. 200+245 mg",marca:"Krka",prazo:"3 meses",nao:false,disc:false},
+  {cod:"110002265",dci:"Emtricitabina + Tenofovir cp. 200+245 mg",marca:"Truvada",prazo:"",nao:false,disc:false},
+  {cod:"110002265",dci:"Emtricitabina + Tenofovir cp. 200+245 mg",marca:"Zentiva",prazo:"30 dias",nao:false,disc:false},
+  {cod:"110002253",dci:"Emtricitabina cp. 200 mg",marca:"Emtriva",prazo:"",nao:true,disc:false},
+  {cod:"110004002",dci:"Emtricitabina + Rilpivirina + Tenofovir alafenamida cp. 200+25+25 mg",marca:"Odefsey",prazo:"",nao:true,disc:false},
+  {cod:"110003957",dci:"Emtricitabina + Tenofovir alafenamida cp. 200+25 mg",marca:"Descovy",prazo:"",nao:true,disc:false},
+  {cod:"110003359",dci:"Etravirina cp. 200 mg",marca:"Intelence",prazo:"6 semanas",nao:true,disc:false},
+  {cod:"110004342",dci:"Lamivudina + Dolutegravir cp. 300+50 mg",marca:"Dovato",prazo:"",nao:false,disc:false},
+  {cod:"110004175",dci:"Raltegravir cp. 600 mg",marca:"Isentress",prazo:"",nao:false,disc:false},
+  {cod:"110002675",dci:"Raltegravir cp. 400 mg",marca:"Isentress",prazo:"",nao:false,disc:false},
+  {cod:"110001766",dci:"Ritonavir cp. 100 mg",marca:"Norvir",prazo:"",nao:false,disc:false},
+  {cod:"110001766",dci:"Ritonavir cp. 100 mg",marca:"Mylan",prazo:"45 dias",nao:false,disc:false},
+  {cod:"110004102",dci:"Tenofovir alafenamida cp. 25 mg",marca:"Vemlidy",prazo:"",nao:true,disc:false},
+  {cod:"110000743",dci:"Tenofovir cp. 245 mg",marca:"Viread",prazo:"",nao:false,disc:false},
+  {cod:"110000743",dci:"Tenofovir cp. 245 mg",marca:"Teva",prazo:"",nao:false,disc:false},
+  {cod:"110000743",dci:"Tenofovir cp. 245 mg",marca:"Mylan",prazo:"90 dias",nao:false,disc:false},
+];
+
+let activeF="all";
+
+function render(){
+  const q=document.getElementById("search").value.toLowerCase().trim();
+  let list=data;
+  if(activeF==="ok") list=list.filter(r=>!r.nao&&!r.disc);
+  if(activeF==="no") list=list.filter(r=>r.nao);
+  if(activeF==="prazo") list=list.filter(r=>r.prazo);
+  if(q) list=list.filter(r=>r.dci.toLowerCase().includes(q)||r.marca.toLowerCase().includes(q)||r.cod.includes(q));
+
+  const tbody=document.getElementById("tbody");
+  const nr=document.getElementById("no-result");
+  tbody.innerHTML="";
+  document.getElementById("count").textContent=`${list.length} registo${list.length!==1?"s":""}`;
+
+  if(!list.length){nr.style.display="block";return;}
+  nr.style.display="none";
+
+  list.forEach(r=>{
+    const estadoBadge=r.disc
+      ?'<span class="badge-disc">Não comercializado</span>'
+      :r.nao
+        ?'<span class="badge-no">Não Reembalar</span>'
+        :'<span class="badge-ok">Reembalar</span>';
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td class="codigo">${r.cod}</td>
+      <td class="dci">${r.dci}</td>
+      <td class="marca">${r.marca}</td>
+      <td>${r.prazo?`<span class="prazo-badge">${r.prazo}</span>`:'<span style="color:var(--muted);font-size:13px">—</span>'}</td>
+      <td>${estadoBadge}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById("search").addEventListener("input",render);
+document.querySelectorAll(".fbtn").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll(".fbtn").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    activeF=b.dataset.f;
+    render();
+  });
+});
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medicamentos Fracionados — SF ULSSA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --navy:#1B3A5C;--navy-dark:#0F2540;--navy-mid:#2A5282;
+    --teal:#0D6B56;--teal-dark:#084D3E;--teal-50:#EBF7F4;--teal-100:#C5EAE0;
+    --bg:#F3F7F5;--surface:#fff;--border:#D4E5DF;
+    --text:#1A2A25;--muted:#5A7570;
+    --obs-bg:#FFF8E6;--obs-border:#F5D87A;--obs-text:#7A5500;
+  }
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
+
+  nav{background:var(--navy-dark);padding:.6rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+  .nav-home{color:#C3D9F0;font-size:13px;text-decoration:none;opacity:.8}
+  .nav-home:hover{opacity:1}
+  .nav-sep{color:#4A6A8A;font-size:13px}
+  .nav-current{color:white;font-size:13px;font-weight:500}
+
+  header{background:var(--teal-dark);color:white;padding:1.75rem 1.5rem 1.5rem}
+  .header-inner{max-width:900px;margin:0 auto}
+  .header-tag{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--teal-100);margin-bottom:.4rem}
+  header h1{font-family:'Outfit',sans-serif;font-size:clamp(1.3rem,3.5vw,1.8rem);font-weight:700}
+  header p{margin-top:.5rem;font-size:13px;color:var(--teal-100);line-height:1.6;max-width:540px}
+
+  .toolbar{position:sticky;top:0;z-index:50;background:white;border-bottom:1px solid var(--border);padding:.7rem 1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .toolbar-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:.55rem}
+  .search-wrap{position:relative}
+  .search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;font-size:15px}
+  input[type=text]{width:100%;padding:.5rem .75rem .5rem 2.2rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;transition:border-color .15s}
+  input:focus{border-color:var(--teal);background:white}
+  input::placeholder{color:var(--muted)}
+  .filters{display:flex;gap:.35rem;flex-wrap:wrap}
+  .fbtn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:.28rem .7rem;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap}
+  .fbtn:hover{border-color:var(--teal);color:var(--teal-dark)}
+  .fbtn.active{background:var(--teal-dark);color:white;border-color:var(--teal-dark)}
+
+  main{max-width:900px;margin:0 auto;padding:1rem 1.5rem 3rem}
+  .count{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:.75rem}
+
+  .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  thead{background:var(--teal-50)}
+  th{padding:.7rem 1rem;text-align:left;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--teal-dark);border-bottom:1px solid var(--border)}
+  td{padding:.65rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#F8FBFA}
+  .dci{font-weight:500;color:var(--text)}
+  .dose{font-family:monospace;font-size:13px;color:var(--teal-dark);background:var(--teal-50);padding:2px 7px;border-radius:5px;white-space:nowrap}
+  .frac{font-family:monospace;font-size:13px}
+  .obs-badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--obs-bg);color:var(--obs-text);border:1px solid var(--obs-border)}
+  .ped-badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#FEF3C7;color:#92400E;border:1px solid #FDE68A}
+
+  .empty{text-align:center;padding:3rem;color:var(--muted);font-size:14px}
+  #no-result{display:none}
+
+  footer{text-align:center;padding:1.5rem;font-size:11.5px;color:var(--muted);border-top:1px solid var(--border);background:white}
+
+  @media(max-width:600px){
+    .col-frac2,.col-obs{display:none}
+    th:nth-child(3),td:nth-child(3){display:none}
+    th:nth-child(4),td:nth-child(4){display:none}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-home" href="index.html">Portal SF</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-current">Medicamentos Fracionados</span>
+</nav>
+
+<header>
+  <div class="header-inner">
+    <div class="header-tag">SF ULSSA · Fracionamento</div>
+    <h1>Lista de Medicamentos Fracionados</h1>
+    <p>Medicamentos fracionados nos Serviços Farmacêuticos da ULSSA com as respetivas doses e frações disponíveis.</p>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="toolbar-inner">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Pesquisar DCI…" autocomplete="off">
+    </div>
+    <div class="filters">
+      <button class="fbtn active" data-f="all">Todos</button>
+      <button class="fbtn" data-f="dupla">Duas frações</button>
+      <button class="fbtn" data-f="obs">Com observação</button>
+      <button class="fbtn" data-f="ped">Pediatria</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="count" id="count"></div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>DCI</th>
+          <th>Dosagem</th>
+          <th>Fração 1</th>
+          <th class="col-frac2">Fração 2</th>
+          <th class="col-obs">Observações</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div id="no-result" class="empty">Nenhum medicamento encontrado.</div>
+  </div>
+</main>
+
+<footer>SF ULSSA · Publicado 10-03-2026 · Para uso interno</footer>
+
+<script>
+const data = [
+  {dci:"Ácido acetilsalicílico",dose:"100 mg",f1:"50 mg",f2:"",obs:"Apenas para Pediatria",ped:true},
+  {dci:"Ácido fólico",dose:"5 mg",f1:"2,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Alprazolam",dose:"0,25 mg",f1:"0,125 mg",f2:"",obs:"",ped:false},
+  {dci:"Amiodarona",dose:"200 mg",f1:"100 mg",f2:"",obs:"",ped:false},
+  {dci:"Amlodipina",dose:"5 mg",f1:"2,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Beta-histina",dose:"16 mg",f1:"8 mg",f2:"",obs:"",ped:false},
+  {dci:"Captopril",dose:"25 mg",f1:"12,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Carbonato de lítio",dose:"400 mg",f1:"200 mg",f2:"",obs:"",ped:false},
+  {dci:"Carvedilol",dose:"6,25 mg",f1:"3,125 mg",f2:"",obs:"",ped:false},
+  {dci:"Cefixima",dose:"400 mg",f1:"200 mg",f2:"",obs:"",ped:false},
+  {dci:"Cetirizina",dose:"10 mg",f1:"5 mg",f2:"",obs:"",ped:false},
+  {dci:"Clobazam",dose:"10 mg",f1:"5 mg",f2:"",obs:"",ped:false},
+  {dci:"Clonidina",dose:"0,150 mg",f1:"0,075 mg",f2:"",obs:"",ped:false},
+  {dci:"Clorotalidona",dose:"50 mg",f1:"25 mg",f2:"",obs:"",ped:false},
+  {dci:"Clozapina",dose:"25 mg",f1:"12,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Colquicina",dose:"1 mg",f1:"0,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Cotrimoxazol",dose:"960 mg",f1:"480 mg",f2:"",obs:"",ped:false},
+  {dci:"Dexametasona",dose:"4 mg",f1:"2 mg",f2:"",obs:"",ped:false},
+  {dci:"Diazepam",dose:"5 mg",f1:"2,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Enalapril",dose:"5 mg",f1:"2,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Escitalopram",dose:"10 mg",f1:"5 mg",f2:"",obs:"",ped:false},
+  {dci:"Eslicarbazepina",dose:"800 mg",f1:"400 mg",f2:"",obs:"",ped:false},
+  {dci:"Etambutol",dose:"400 mg",f1:"200 mg",f2:"",obs:"",ped:false},
+  {dci:"Fenobarbital",dose:"100 mg",f1:"50 mg",f2:"",obs:"",ped:false},
+  {dci:"Flecainida",dose:"100 mg",f1:"50 mg",f2:"",obs:"",ped:false},
+  {dci:"Fludrocortisona",dose:"0,1 mcg",f1:"0,05 mcg",f2:"",obs:"",ped:false},
+  {dci:"Furosemida",dose:"40 mg",f1:"20 mg",f2:"",obs:"",ped:false},
+  {dci:"Hidrocortisona",dose:"10 mg",f1:"5 mg",f2:"",obs:"",ped:false},
+  {dci:"Hidroclorotiazida + Amilorida",dose:"50+5 mg",f1:"25+2,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Hidroxicloroquina",dose:"400 mg",f1:"200 mg",f2:"",obs:"",ped:false},
+  {dci:"Hidroxizina",dose:"25 mg",f1:"12,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Ivabradina",dose:"5 mg",f1:"2,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Lamotrigina",dose:"25 mg",f1:"12,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Levodopa + Benserazida",dose:"200+50 mg",f1:"100+25 mg",f2:"50+12,5 mg",obs:"",ped:false},
+  {dci:"Levodopa + Carbidopa",dose:"250+25 mg",f1:"125+12,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Levotiroxina",dose:"25 mg",f1:"12,5 mcg",f2:"",obs:"",ped:false},
+  {dci:"Lisinopril",dose:"5 mg",f1:"2,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Lorazepam",dose:"1 mg",f1:"0,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Losartan",dose:"50 mg",f1:"25 mg",f2:"",obs:"",ped:false},
+  {dci:"Memantina",dose:"10 mg",f1:"5 mg",f2:"",obs:"",ped:false},
+  {dci:"Metilprednisolona",dose:"4 mg",f1:"2 mg",f2:"",obs:"",ped:false},
+  {dci:"Metoprolol",dose:"100 mg",f1:"50 mg",f2:"",obs:"",ped:false},
+  {dci:"Midazolam",dose:"15 mg",f1:"7,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Minoxidil",dose:"5 mg",f1:"2,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Mirtazapina",dose:"15 mg",f1:"7,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Mononitrato de isossorbido",dose:"20 mg",f1:"10 mg",f2:"",obs:"",ped:false},
+  {dci:"Mononitrato de isossorbido AP",dose:"60 mg AP",f1:"30 mg AP",f2:"",obs:"",ped:false},
+  {dci:"Morfina",dose:"10 mg",f1:"5 mg",f2:"",obs:"",ped:false},
+  {dci:"Oxibutinina",dose:"5 mg",f1:"2,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Paroxetina",dose:"20 mg",f1:"10 mg",f2:"",obs:"",ped:false},
+  {dci:"Prednisolona",dose:"5 mg",f1:"2,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Primidona",dose:"250 mg",f1:"125 mg",f2:"",obs:"",ped:false},
+  {dci:"Sertralina",dose:"50 mg",f1:"25 mg",f2:"",obs:"",ped:false},
+  {dci:"Tetrabenazina",dose:"25 mg",f1:"12,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Tiamazol (Metimazol)",dose:"5 mg",f1:"2,5 mg",f2:"",obs:"",ped:false},
+  {dci:"Trazodona",dose:"100 mg",f1:"50 mg",f2:"25 mg",obs:"",ped:false},
+  {dci:"Trazodona AC AP",dose:"150 mg AP",f1:"50 mg AP",f2:"",obs:"",ped:false},
+  {dci:"Valsartan",dose:"40 mg",f1:"20 mg",f2:"",obs:"",ped:false},
+  {dci:"Zolpidem",dose:"10 mg",f1:"5 mg",f2:"",obs:"",ped:false},
+];
+
+let activeF = "all";
+
+function render(){
+  const q = document.getElementById("search").value.toLowerCase().trim();
+  let list = data;
+  if(activeF==="dupla") list=list.filter(r=>r.f2);
+  if(activeF==="obs") list=list.filter(r=>r.obs);
+  if(activeF==="ped") list=list.filter(r=>r.ped);
+  if(q) list=list.filter(r=>r.dci.toLowerCase().includes(q));
+
+  const tbody=document.getElementById("tbody");
+  const nr=document.getElementById("no-result");
+  tbody.innerHTML="";
+  document.getElementById("count").textContent=`${list.length} medicamento${list.length!==1?"s":""}`;
+
+  if(!list.length){nr.style.display="block";return;}
+  nr.style.display="none";
+
+  list.forEach(r=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td class="dci">${r.dci}</td>
+      <td><span class="dose">${r.dose}</span></td>
+      <td class="frac">${r.f1}</td>
+      <td class="frac col-frac2">${r.f2||"—"}</td>
+      <td class="col-obs">${r.ped?'<span class="ped-badge">Pediatria</span>':r.obs?`<span class="obs-badge">${r.obs}</span>`:"—"}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById("search").addEventListener("input",render);
+document.querySelectorAll(".fbtn").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll(".fbtn").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    activeF=b.dataset.f;
+    render();
+  });
+});
+render();
+</script>
+</body>
+</html>

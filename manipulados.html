@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manipulados Não Estéreis — SF ULSSA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --navy:#1B3A5C;--navy-dark:#0F2540;
+    --amber:#78350F;--amber-dark:#451A03;--amber-50:#FFFBEB;--amber-100:#FDE68A;
+    --bg:#FAF7F2;--surface:#fff;--border:#E5DDD0;
+    --text:#1A1510;--muted:#7A6A50;
+    --oral-bg:#DBEAFE;--oral-text:#1E3A8A;
+    --cut-bg:#D1FAE5;--cut-text:#065F46;
+    --other-bg:#F3E8FF;--other-text:#4C1D95;
+    --frig-bg:#FEE2E2;--frig-text:#991B1B;
+    --apf-bg:#FEF3C7;--apf-text:#92400E;
+  }
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
+
+  nav{background:var(--navy-dark);padding:.6rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+  .nav-home{color:#C3D9F0;font-size:13px;text-decoration:none;opacity:.8}
+  .nav-home:hover{opacity:1}
+  .nav-sep{color:#4A6A8A;font-size:13px}
+  .nav-current{color:white;font-size:13px;font-weight:500}
+
+  header{background:var(--amber-dark);color:white;padding:1.75rem 1.5rem 1.5rem}
+  .header-inner{max-width:980px;margin:0 auto}
+  .header-tag{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-100);margin-bottom:.4rem}
+  header h1{font-family:'Outfit',sans-serif;font-size:clamp(1.3rem,3.5vw,1.8rem);font-weight:700}
+  header p{margin-top:.5rem;font-size:13px;color:var(--amber-100);line-height:1.6;max-width:580px}
+
+  .toolbar{position:sticky;top:0;z-index:50;background:white;border-bottom:1px solid var(--border);padding:.7rem 1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .toolbar-inner{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:.55rem}
+  .search-wrap{position:relative}
+  .search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;font-size:15px}
+  input[type=text]{width:100%;padding:.5rem .75rem .5rem 2.2rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;transition:border-color .15s}
+  input:focus{border-color:var(--amber);background:white}
+  input::placeholder{color:var(--muted)}
+
+  .filter-row{display:flex;gap:.35rem;flex-wrap:wrap;align-items:center}
+  .filter-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-right:2px}
+  .fbtn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:.28rem .7rem;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap}
+  .fbtn:hover{border-color:var(--amber);color:var(--amber-dark)}
+  .fbtn.active{background:var(--amber-dark);color:white;border-color:var(--amber-dark)}
+
+  main{max-width:980px;margin:0 auto;padding:1rem 1.5rem 3rem}
+  .count{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:.75rem}
+
+  .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:640px}
+  thead{background:var(--amber-50)}
+  th{padding:.7rem 1rem;text-align:left;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--amber-dark);border-bottom:1px solid var(--border)}
+  td{padding:.6rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#FDFAF5}
+
+  .med{font-weight:500;line-height:1.4}
+  .forma-oral{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--oral-bg);color:var(--oral-text)}
+  .forma-cut{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--cut-bg);color:var(--cut-text)}
+  .forma-other{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--other-bg);color:var(--other-text)}
+  .prazo-num{font-weight:600;font-size:13px}
+  .prazo-low{color:#991B1B}
+  .prazo-mid{color:#92400E}
+  .prazo-high{color:#065F46}
+  .tag{display:inline-block;font-size:10.5px;font-weight:600;padding:1px 6px;border-radius:4px;margin-left:3px}
+  .tag-frig{background:var(--frig-bg);color:var(--frig-text)}
+  .tag-apf{background:var(--apf-bg);color:var(--apf-text)}
+
+  .empty{text-align:center;padding:3rem;color:var(--muted);font-size:14px}
+  #no-result{display:none}
+  footer{text-align:center;padding:1.5rem;font-size:11.5px;color:var(--muted);border-top:1px solid var(--border);background:white}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-home" href="index.html">Portal SF</a>
+  <span class="nav-sep">/</span>
+  <span class="nav-current">Manipulados Não Estéreis</span>
+</nav>
+
+<header>
+  <div class="header-inner">
+    <div class="header-tag">SF ULSSA · Farmacotecnia</div>
+    <h1>Manipulados Não Estéreis</h1>
+    <p>Listagem de medicamentos manipulados preparados na Unidade de Farmacotecnia Não Estéreis da ULSSA. Fevereiro 2024.</p>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="toolbar-inner">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Pesquisar medicamento…" autocomplete="off">
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Forma:</span>
+      <button class="fbtn active" data-forma="all">Todas</button>
+      <button class="fbtn" data-forma="Suspensão Oral">Suspensão Oral</button>
+      <button class="fbtn" data-forma="Solução Oral">Solução Oral</button>
+      <button class="fbtn" data-forma="Cápsulas">Cápsulas</button>
+      <button class="fbtn" data-forma="Creme">Creme</button>
+      <button class="fbtn" data-forma="Pomada">Pomada</button>
+      <button class="fbtn" data-forma="Pó">Pó oral</button>
+      <button class="fbtn" data-forma="Outro">Outros</button>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Via:</span>
+      <button class="fbtn2 active" data-via="all">Todas</button>
+      <button class="fbtn2" data-via="Via Oral">Via Oral</button>
+      <button class="fbtn2" data-via="Aplicação Cutânea">Cutânea</button>
+      <button class="fbtn2" data-via="Uso Bucal">Uso Bucal</button>
+      <button class="fbtn2" data-via="Uso Retal">Uso Retal</button>
+      <button class="fbtn2" data-via="Uso Vaginal">Uso Vaginal</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="count" id="count"></div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Medicamento Manipulado</th>
+          <th>Forma Farmacêutica</th>
+          <th>Via</th>
+          <th>Prazo (dias)</th>
+          <th>Notas</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div id="no-result" class="empty">Nenhum manipulado encontrado.</div>
+  </div>
+</main>
+
+<footer>SF ULSSA · Unidade de Farmacotecnia NE · Fevereiro 2024 · Para uso interno</footer>
+
+<script>
+const data=[
+  {med:"Ácido Acetilsalicílico Papeis Med.",forma:"Pó para administração Oral",fcat:"Pó",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Ácido Fólico Papeis Med.",forma:"Pó para administração Oral",fcat:"Pó",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Acenocumarol Papeis Med.",forma:"Pó para administração Oral",fcat:"Pó",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Acetazolamida Suspensão Oral 25 mg/ml Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Ácido Acético Sol. Aquosa (2%; 2,5%; 3%; 5%)",forma:"Solução Cutânea",fcat:"Outro",via:"Aplicação Cutânea",prazo:60,frig:false,did:false,apf:false},
+  {med:"Ácido Fólico Suspensão Oral 1 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Ácido Salicílico Pomada (6%–10%) Bisng. 50 g",forma:"Pomada",fcat:"Pomada",via:"Aplicação Cutânea",prazo:90,frig:false,did:false,apf:false},
+  {med:"Ácido Tricloroacético 50% Solução Aquosa Fr.50 mL",forma:"Solução Cutânea",fcat:"Outro",via:"Aplicação Cutânea",prazo:30,frig:false,did:false,apf:false},
+  {med:"Ácido Ursodesoxicólico Suspensão Oral 15 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Ácido Ursodesoxicólico Suspensão Oral 50 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:35,frig:false,did:false,apf:false},
+  {med:"Amiodarona 0,5% Fr.80 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Amitriptilina 2,5 mg/mL Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:60,frig:false,did:false,apf:false},
+  {med:"Amlodipina Suspensão Oral 1 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Anfotericina B 1% Pomada Rcp. 50 g",forma:"Pomada",fcat:"Pomada",via:"Aplicação Cutânea",prazo:90,frig:false,did:false,apf:false},
+  {med:"Atenolol Susp. Oral 2 mg/ml Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Baclofeno 5 mg Cápsulas",forma:"Cápsulas",fcat:"Cápsulas",via:"Via Oral",prazo:180,frig:false,did:false,apf:true},
+  {med:"Baclofeno 5 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Benzoato de Sódio Sol. Oral 10% Fr.250 mL",forma:"Solução Oral",fcat:"Solução Oral",via:"Via Oral",prazo:28,frig:false,did:false,apf:false},
+  {med:"Benzoato de Sódio Solução Oral 250 mg/ml Fr.200 mL",forma:"Solução Oral",fcat:"Solução Oral",via:"Via Oral",prazo:35,frig:false,did:false,apf:false},
+  {med:"Bicarbonato de Sódio Cápsulas 500 mg",forma:"Cápsulas",fcat:"Cápsulas",via:"Via Oral",prazo:180,frig:false,did:false,apf:true},
+  {med:"Bicarbonato de Sódio Solução Oral 84 mg/mL (1 mEq/mL) Fr.100 mL",forma:"Solução Oral",fcat:"Solução Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Biotina Suspensão Oral 5 mg/ml Fr.40 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Bosentano Suspensão Oral 6,25 mg/mL Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Budesonido 0,25 mg/ml Gel Oral Ser.50 mL",forma:"Gel Oral",fcat:"Outro",via:"Via Oral",prazo:35,frig:false,did:false,apf:false},
+  {med:"Budesonido 0,25 mg/ml Suspensão Oral Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:35,frig:false,did:false,apf:false},
+  {med:"Calcitriol Solução Oral 0,25 mcg/mL Ser.1 mL",forma:"Solução Oral",fcat:"Solução Oral",via:"Via Oral",prazo:7,frig:false,did:false,apf:false},
+  {med:"Captopril 1 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:true,did:false,apf:false},
+  {med:"Carbonato de Cálcio Cápsulas 250 mg",forma:"Cápsulas",fcat:"Cápsulas",via:"Via Oral",prazo:180,frig:false,did:false,apf:false},
+  {med:"Carbonato de Cálcio Cápsulas 500 mg",forma:"Cápsulas",fcat:"Cápsulas",via:"Via Oral",prazo:180,frig:false,did:false,apf:false},
+  {med:"Carbonato de Cálcio Papeis Med.",forma:"Pó para administração Oral",fcat:"Pó",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Carbonato de Cálcio Suspensão Oral 200 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:35,frig:false,did:false,apf:false},
+  {med:"Cidofovir Creme 1% Bg.15 g",forma:"Creme",fcat:"Creme",via:"Aplicação Cutânea",prazo:90,frig:false,did:false,apf:false},
+  {med:"Ciprofloxacina 50 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Citrato de Cafeína 1% Fr.10 mL",forma:"Solução Oral",fcat:"Solução Oral",via:"Via Oral",prazo:30,frig:true,did:false,apf:false},
+  {med:"Citrato de Cafeína Sol. Oral 20 mg/ml Fr.100 mL",forma:"Solução Oral",fcat:"Solução Oral",via:"Via Oral",prazo:30,frig:true,did:false,apf:false},
+  {med:"Citrato de Sódio Sol. Oral 8,82% (0,3 M) Fr.100 mL",forma:"Solução Oral",fcat:"Solução Oral",via:"Via Oral",prazo:30,frig:true,did:false,apf:false},
+  {med:"Clindamicina Suspensão Oral 50 mg/mL Fr.90 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Clobazam Suspensão Oral 1 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Clonidina Suspensão Oral 10 mcg/mL Fr.90 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:35,frig:false,did:false,apf:false},
+  {med:"Clopidogrel Papeis Med.",forma:"Pó para administração Oral",fcat:"Pó",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Cloreto de Cálcio 2% Sol. Aquosa Fr.100 mL",forma:"Solução Cutânea",fcat:"Outro",via:"Aplicação Cutânea",prazo:35,frig:false,did:false,apf:false},
+  {med:"Cloreto de Sódio Cápsulas 500 mg",forma:"Cápsulas",fcat:"Cápsulas",via:"Via Oral",prazo:180,frig:false,did:false,apf:true},
+  {med:"Colesterol 2% + Lovastatina 2% Creme Rec. 100 g",forma:"Creme",fcat:"Creme",via:"Aplicação Cutânea",prazo:35,frig:false,did:false,apf:false},
+  {med:"Dapsona Cápsulas 100 mg",forma:"Cápsulas",fcat:"Cápsulas",via:"Via Oral",prazo:180,frig:false,did:false,apf:false},
+  {med:"Dapsona Suspensão Oral 2 mg/ml Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Diazepam Suspensão Oral 0,4 mg/mL Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Diazepam Suspensão Oral 2 mg/mL Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Diazóxido Suspensão Oral 10 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:35,frig:false,did:false,apf:false},
+  {med:"Dieta Modular Glucídica Cápsulas 400 mg",forma:"Cápsulas",fcat:"Cápsulas",via:"Via Oral",prazo:180,frig:false,did:false,apf:false},
+  {med:"Dieta Modular Glucídica Papeis Med.",forma:"Pó para administração Oral",fcat:"Pó",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Dieta Modular Proteica Papeis Med.",forma:"Pó para administração Oral",fcat:"Pó",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Digoxina Suspensão Oral 0,05 mg/mL Fr.20 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Doxiciclina Suspensão Oral 15 mg/mL Fr.60 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Enalapril Susp. Oral 1 mg/ml Fr.50 ml",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Eslicarbazepina 100 mg/ml Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Espironolactona 2 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:true,did:false,apf:false},
+  {med:"Espironolactona Cápsulas 12,5 mg",forma:"Cápsulas",fcat:"Cápsulas",via:"Via Oral",prazo:180,frig:false,did:false,apf:true},
+  {med:"Espironolactona Suspensão Oral 2 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Espironolactona Suspensão Oral 5 mg/mL Fr.150 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Estiripentol Cápsulas (50–150) mg",forma:"Cápsulas",fcat:"Cápsulas",via:"Via Oral",prazo:180,frig:false,did:false,apf:false},
+  {med:"Etambutol Susp. Oral 50 mg/ml Fr.120 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Famotidina Suspensão Oral 8 mg/mL Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Fenitoína Suspensão Oral 25 mg/mL Fr.80 mL (Isento de açúcar)",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Fenobarbital Susp. Oral 10 mg/ml Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:35,frig:false,did:false,apf:false},
+  {med:"Fenobarbital Susp. Oral 10 mg/ml Fr.50 mL — Isenta de açúcar",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:60,frig:false,did:false,apf:false},
+  {med:"Fenol 5% Solução Alcoólica (70°) Fr.100 ml",forma:"Solução",fcat:"Outro",via:"Aplicação Cutânea",prazo:35,frig:false,did:false,apf:false},
+  {med:"Flecainida Susp. Oral 5 mg/ml Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:60,frig:false,did:false,apf:false},
+  {med:"Fludrocortisona Cápsulas 75 mcg",forma:"Cápsulas",fcat:"Cápsulas",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Fludrocortisona Susp. Oral 0,02 mg/ml Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Fortificante leite materno 400 mg",forma:"Cápsulas",fcat:"Cápsulas",via:"Via Oral",prazo:28,frig:false,did:false,apf:false},
+  {med:"Fosfato Dissódico Cápsulas 1148 mg (250 mg P)",forma:"Cápsulas",fcat:"Cápsulas",via:"Via Oral",prazo:180,frig:false,did:false,apf:true},
+  {med:"Furosemida Solução Oral 2,5 mg/mL Fr.40 mL",forma:"Solução Oral",fcat:"Solução Oral",via:"Via Oral",prazo:35,frig:true,did:false,apf:false},
+  {med:"Gabapentina Suspensão Oral 100 mg/ml Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:35,frig:false,did:false,apf:false},
+  {med:"Gel Cetamina 0,5% + Amitriptilina 2%",forma:"Gel",fcat:"Outro",via:"Aplicação Cutânea",prazo:30,frig:false,did:false,apf:false},
+  {med:"Glucose Mono-hidratada 25 g Papeis Med.",forma:"Pó para administração Oral",fcat:"Pó",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Hidrato de Cloral 10% Fr.100 mL",forma:"Solução Oral",fcat:"Solução Oral",via:"Via Oral",prazo:15,frig:false,did:false,apf:false},
+  {med:"Hidrato de Cloral 10% Fr.50 mL",forma:"Solução Oral",fcat:"Solução Oral",via:"Via Oral",prazo:15,frig:true,did:false,apf:false},
+  {med:"Hidroclorotiazida Suspensão Oral 2 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:35,frig:true,did:false,apf:false},
+  {med:"Hidrocortisona 0,1% Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Hidrocortisona 0,25% Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Iodo Solução Aquosa 5% (Sol. de Lugol) Fr.100 g",forma:"Solução Oral",fcat:"Solução Oral",via:"Aplicação Cutânea",prazo:90,frig:false,did:false,apf:false},
+  {med:"Iodo Solução Aquosa 5% (Sol. de Lugol) Fr.10 g",forma:"Solução Oral",fcat:"Solução Oral",via:"Via Oral",prazo:90,frig:false,did:false,apf:true},
+  {med:"Lacosamida Papeis Med.",forma:"Pó para administração Oral",fcat:"Pó",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Lacosamida Suspensão Oral 10 mg/ml Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Lactose Mono-Hidratada Papeis Med.",forma:"Pó para administração Oral",fcat:"Pó",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Levodopa/Carbidopa Suspensão Oral 1/0,25 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Levodopa/Carbidopa Suspensão Oral 5/1,25 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Levotiroxina Suspensão Oral 12,5 mcg/mL Fr.10 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:8,frig:false,did:false,apf:false},
+  {med:"Lidocaína Creme vaginal 5% Bg.20 g",forma:"Creme",fcat:"Creme",via:"Uso Vaginal",prazo:30,frig:false,did:false,apf:false},
+  {med:"Lisinopril Susp. Oral 1 mg/ml Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:35,frig:false,did:false,apf:false},
+  {med:"Loção de Banho (Alfazema)",forma:"Solução Cutânea",fcat:"Outro",via:"Aplicação Cutânea",prazo:120,frig:false,did:false,apf:true},
+  {med:"Mercaptopurina Susp. Oral 10 mg/mL Sr.2,5 ml",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Metadona Suspensão Oral 1 mg/ml Fr.40 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Metronidazol 20 mg/mL Fr.125 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:15,frig:false,did:false,apf:false},
+  {med:"Minoxidil Suspensão Oral 2 mg/ml Fr.30 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Morfina Solução Oral 0,2 mg/mL Fr.50 mL (NEO)",forma:"Solução Oral",fcat:"Solução Oral",via:"Via Oral",prazo:35,frig:true,did:false,apf:false},
+  {med:"Morfina Solução Oral 0,2 mg/mL Fr.50 mL (NEO, S/Conservantes)",forma:"Solução Oral",fcat:"Solução Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Morfina Solução Oral 1 mg/mL Fr.50 mL (Pediatria)",forma:"Solução Oral",fcat:"Solução Oral",via:"Via Oral",prazo:35,frig:false,did:false,apf:false},
+  {med:"Nifedipina 1 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Nistatina + Clorhexidina Colutório",forma:"Colutório",fcat:"Outro",via:"Uso Bucal",prazo:14,frig:false,did:false,apf:false},
+  {med:"Nistatina + Lidocaína Colutório",forma:"Colutório",fcat:"Outro",via:"Uso Bucal",prazo:14,frig:false,did:false,apf:false},
+  {med:"Nitrofurantoína 5 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Olanzapina Suspensão Oral 1 mg/mL Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Ondansetron 1 mg/mL Fr.80 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Oseltamivir 15 mg/mL Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Oseltamivir Suspensão Oral 15 mg/ml Sem Sacarose Fr.30 ml",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Oxcarbazepina Papeis Med.",forma:"Pó para administração Oral",fcat:"Pó",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Oxibutinina Suspensão Oral 1 mg/mL Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Paromomicina Creme (o/w) 15% 50 g",forma:"Creme",fcat:"Creme",via:"Aplicação Cutânea",prazo:14,frig:false,did:false,apf:false},
+  {med:"Pasta de Água Fr.100 g",forma:"Pasta Cutânea",fcat:"Outro",via:"Aplicação Cutânea",prazo:90,frig:false,did:true,apf:true},
+  {med:"Pasta de Lassar Modificada Fr.250 g",forma:"Pasta Cutânea",fcat:"Outro",via:"Aplicação Cutânea",prazo:90,frig:false,did:true,apf:true},
+  {med:"Permanganato de Potássio 1:10 000",forma:"Solução Cutânea",fcat:"Outro",via:"Aplicação Cutânea",prazo:7,frig:false,did:false,apf:false},
+  {med:"Pirazinamida Susp. Oral 100 mg/ml Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Piridostigmina Papeis Med.",forma:"Pó para administração Oral",fcat:"Pó",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Piridoxina Suspensão Oral 25 mg/mL Fr.40 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Pirimetamina Susp. Oral 2 mg/ml Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:60,frig:false,did:false,apf:false},
+  {med:"Prednisolona 5 mg/mL Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Primidona Suspensão Oral 50 mg/mL Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Propranolol 1 mg/mL Fr.80 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Resina Permutadora de Catiões Papeis Med.",forma:"Pó para administração Oral",fcat:"Pó",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Retinol Papeis Med.",forma:"Pó para administração Oral",fcat:"Pó",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Riboflavina Cápsulas 100 mg",forma:"Cápsulas",fcat:"Cápsulas",via:"Via Oral",prazo:180,frig:false,did:false,apf:false},
+  {med:"Riboflavina Suspensão Oral 25 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Rifampicina Susp. Oral 25 mg/mL Fr.60 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:28,frig:false,did:false,apf:false},
+  {med:"Ruxolitinib Suspensão Oral 2 mg/ml Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Salicilato de Sódio Solução 2%",forma:"Solução Cutânea",fcat:"Outro",via:"Aplicação Cutânea",prazo:90,frig:false,did:false,apf:true},
+  {med:"Sevelamero Susp. Oral 50 mg/mL Fr.240 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Sildenafil 2,5 mg/mL Fr.80 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Sirolimus 0,4% Pomada 20 g",forma:"Pomada",fcat:"Pomada",via:"Aplicação Cutânea",prazo:60,frig:false,did:false,apf:false},
+  {med:"Sotalol Suspensão Oral 5 mg/mL Fr.160 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:35,frig:false,did:false,apf:false},
+  {med:"Substituto da Saliva Fr.50 mL",forma:"Colutório",fcat:"Outro",via:"Uso Bucal",prazo:60,frig:true,did:true,apf:false},
+  {med:"Sulfadiazina Suspensão Oral 60 mg/ml Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Tacrolimus Supositório 2 mg",forma:"Supositório",fcat:"Outro",via:"Uso Retal",prazo:90,frig:false,did:false,apf:false},
+  {med:"Tetrabenazina Cápsulas 3,125 mg",forma:"Cápsulas",fcat:"Cápsulas",via:"Via Oral",prazo:180,frig:false,did:false,apf:false},
+  {med:"Tiamazol Suspensão Oral 1 mg/mL Fr.40 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Tiamina Suspensão Oral 50 mg/mL Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Tocoferol Papeis Med.",forma:"Pó para administração Oral",fcat:"Pó",via:"Via Oral",prazo:30,frig:false,did:false,apf:false},
+  {med:"Topiramato Susp. Oral 6 mg/ml Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:35,frig:false,did:false,apf:false},
+  {med:"Topiramato Suspensão Oral 5 mg/ml Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:35,frig:false,did:false,apf:false},
+  {med:"Tri-Hexifenidilo Susp. Oral 0,4 mg/mL Fr.100 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Trimetoprim 10 mg/mL Fr.30 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:60,frig:true,did:false,apf:false},
+  {med:"Vancomicina Sol. Oral 25 mg/mL Fr.200 mL",forma:"Solução Oral",fcat:"Solução Oral",via:"Via Oral",prazo:14,frig:true,did:true,apf:false},
+  {med:"Varfarina Suspensão Oral 1 mg/ml Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:28,frig:false,did:false,apf:false},
+  {med:"Vaselina Líquida Fr.250 mL",forma:"Solução",fcat:"Outro",via:"Aplicação Cutânea",prazo:90,frig:false,did:false,apf:true},
+  {med:"Vigabatrina Susp. Oral 50 mg/ml",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:14,frig:false,did:false,apf:false},
+  {med:"Zinco (Acetato) Suspensão Oral 5 mg/mL Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:35,frig:false,did:false,apf:false},
+  {med:"Zonisamida Susp. Oral 10 mg/ml Fr.50 mL",forma:"Suspensão Oral",fcat:"Suspensão Oral",via:"Via Oral",prazo:28,frig:false,did:false,apf:false},
+];
+
+let activeForma="all", activeVia="all";
+
+function prazoClass(p){if(p<=14)return"prazo-low";if(p<=35)return"prazo-mid";return"prazo-high";}
+function formaClass(f){if(f==="Suspensão Oral"||f==="Solução Oral"||f==="Pó")return"forma-oral";if(f==="Creme"||f==="Pomada"||f==="Outro")return"forma-cut";return"forma-other";}
+function formaDisplay(r){if(r.fcat==="Pó")return"Pó oral";return r.forma;}
+
+function render(){
+  const q=document.getElementById("search").value.toLowerCase().trim();
+  let list=data;
+  if(activeForma!=="all") list=list.filter(r=>r.fcat===activeForma);
+  if(activeVia!=="all") list=list.filter(r=>r.via===activeVia);
+  if(q) list=list.filter(r=>r.med.toLowerCase().includes(q)||r.forma.toLowerCase().includes(q));
+
+  const tbody=document.getElementById("tbody");
+  const nr=document.getElementById("no-result");
+  tbody.innerHTML="";
+  document.getElementById("count").textContent=`${list.length} preparação${list.length!==1?"ões":""}`;
+
+  if(!list.length){nr.style.display="block";return;}
+  nr.style.display="none";
+
+  list.forEach(r=>{
+    const tags=(r.frig?'<span class="tag tag-frig">Frig.</span>':'')+
+               (r.apf?'<span class="tag tag-apf">APF</span>':'')+
+               (r.did?'<span class="tag tag-apf">DID</span>':'');
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td class="med">${r.med}</td>
+      <td><span class="${formaClass(r.fcat)}">${formaDisplay(r)}</span></td>
+      <td style="font-size:13px">${r.via}</td>
+      <td><span class="prazo-num ${prazoClass(r.prazo)}">${r.prazo}</span> <span style="font-size:12px;color:var(--muted)">dias</span></td>
+      <td>${tags||'<span style="color:var(--muted);font-size:12px">—</span>'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById("search").addEventListener("input",render);
+
+document.querySelectorAll("[data-forma]").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll("[data-forma]").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");activeForma=b.dataset.forma;render();
+  });
+});
+document.querySelectorAll("[data-via]").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll("[data-via]").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");activeVia=b.dataset.via;render();
+  });
+});
+render();
+</script>
+</body>
+</html>
